@@ -51,60 +51,77 @@ To design and simulate a Verilog HDL seven-segment display driver that converts 
 ## Verilog Code for Seven-Segment Display  
 
 ```verilog
-module bcd_to_7segment(
-    input  [3:0] bcd,
-    output reg [6:0] seg,
-    output reg [3:0] an
-);
-
-always @(*) 
-begin
-    an <= 4'b1110;
-    case (bcd)
-        4'b0000: seg = 7'b1000000;
-        4'b0001: seg = 7'b1111001;
-        4'b0010: seg = 7'b0100100;
-        4'b0011: seg = 7'b0110000;
-        4'b0100: seg = 7'b0011001;
-        4'b0101: seg = 7'b0010010;
-        4'b0110: seg = 7'b0000010;
-        4'b0111: seg = 7'b1111000;
-        4'b1000: seg = 7'b0000000;
-        4'b1001: seg = 7'b0010000;
-        default: seg = 7'b1111111;
-    endcase
+`timescale 1ns / 1ps
+module BCD_to_7seg (bcd,seg,an);
+input  [3:0] bcd;   
+output reg [6:0] seg;
+output reg [3:0] an;
+always @ (bcd) begin
+an <= 4'b1010;
+case (bcd)
+4'b0000: seg = 7'b1000000; 
+4'b0001: seg = 7'b1111001; 
+4'b0010: seg = 7'b0100100; 
+4'b0011: seg = 7'b0110000; 
+4'b0100: seg = 7'b0011001; 
+4'b0101: seg = 7'b0010010; 
+4'b0110: seg = 7'b0000010; 
+4'b0111: seg = 7'b1111000; 
+4'b1000: seg = 7'b0000000; 
+4'b1001: seg = 7'b0010000; 
+default: seg = 7'b1111111; 
+endcase
 end
-
 endmodule
+
+/*
+module tb_BCD_to_7seg;
+
+reg [3:0] bcd;        
+wire [6:0] seg;   
+
+BCD_to_7seg uut (bcd,seg);
+
+initial begin
+
+bcd = 4'b0101; #10; // 5
+
+$finish;
+end
+endmodule
+*/
 
 ```
 ## Constraint file for Seven-Segment Display
 ```
-## DIP SWITCHES (SW0-SW3 for BCD input)
-set_property -dict { PACKAGE_PIN V2 IOSTANDARD LVCMOS33 } [get_ports {bcd[0]}]
-set_property -dict { PACKAGE_PIN U2 IOSTANDARD LVCMOS33 } [get_ports {bcd[1]}]
-set_property -dict { PACKAGE_PIN U1 IOSTANDARD LVCMOS33 } [get_ports {bcd[2]}]
-set_property -dict { PACKAGE_PIN T2 IOSTANDARD LVCMOS33 } [get_ports {bcd[3]}]
+# On-board Slide Switches
+set_property -dict {PACKAGE_PIN V2 IOSTANDARD LVCMOS33} [get_ports {bcd[0]}]
+set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports {bcd[1]}]
+set_property -dict {PACKAGE_PIN U1 IOSTANDARD LVCMOS33} [get_ports {bcd[2]}]
+set_property -dict {PACKAGE_PIN T2 IOSTANDARD LVCMOS33} [get_ports {bcd[3]}]
 
-## 7-SEGMENT DISPLAY (a,b,c,d,e,f,g,dp)
-set_property -dict { PACKAGE_PIN D7 IOSTANDARD LVCMOS33 } [get_ports {seg[0]}]
-set_property -dict { PACKAGE_PIN C5 IOSTANDARD LVCMOS33 } [get_ports {seg[1]}]
-set_property -dict { PACKAGE_PIN A5 IOSTANDARD LVCMOS33 } [get_ports {seg[2]}]
-set_property -dict { PACKAGE_PIN B7 IOSTANDARD LVCMOS33 } [get_ports {seg[3]}]
-set_property -dict { PACKAGE_PIN A7 IOSTANDARD LVCMOS33 } [get_ports {seg[4]}]
-set_property -dict { PACKAGE_PIN D6 IOSTANDARD LVCMOS33 } [get_ports {seg[5]}]
-set_property -dict { PACKAGE_PIN B5 IOSTANDARD LVCMOS33 } [get_ports {seg[6]}]
-set_property -dict { PACKAGE_PIN A6 IOSTANDARD LVCMOS33 } [get_ports {seg[7]}]
 
-## ANODE CONTROL (active-low)
-set_property -dict { PACKAGE_PIN D5 IOSTANDARD LVCMOS33 } [get_ports {an[0]}]
-set_property -dict { PACKAGE_PIN C4 IOSTANDARD LVCMOS33 } [get_ports {an[1]}]
-set_property -dict { PACKAGE_PIN C7 IOSTANDARD LVCMOS33 } [get_ports {an[2]}]
-set_property -dict { PACKAGE_PIN A8 IOSTANDARD LVCMOS33 } [get_ports {an[3]}]
+
+set_property -dict {PACKAGE_PIN F4 IOSTANDARD LVCMOS33} [get_ports {seg[0]}]
+set_property -dict {PACKAGE_PIN J3 IOSTANDARD LVCMOS33} [get_ports {seg[1]}]
+set_property -dict {PACKAGE_PIN D2 IOSTANDARD LVCMOS33} [get_ports {seg[2]}]
+set_property -dict {PACKAGE_PIN C2 IOSTANDARD LVCMOS33} [get_ports {seg[3]}]
+set_property -dict {PACKAGE_PIN B1 IOSTANDARD LVCMOS33} [get_ports {seg[4]}]
+set_property -dict {PACKAGE_PIN H4 IOSTANDARD LVCMOS33} [get_ports {seg[5]}]
+set_property -dict {PACKAGE_PIN D1 IOSTANDARD LVCMOS33} [get_ports {seg[6]}]
+set_property -dict {PACKAGE_PIN C1 IOSTANDARD LVCMOS33} [get_ports {seg[7]}]
+
+# On-board 7-Segment display 1
+set_property -dict {PACKAGE_PIN H3 IOSTANDARD LVCMOS33} [get_ports {an[0]}]
+set_property -dict {PACKAGE_PIN J4 IOSTANDARD LVCMOS33} [get_ports {an[1]}]
+set_property -dict {PACKAGE_PIN F3 IOSTANDARD LVCMOS33} [get_ports {an[2]}]
+set_property -dict {PACKAGE_PIN E4 IOSTANDARD LVCMOS33} [get_ports {an[3]}]
+
+
 ```
 ## FPGA Implementation Output
 
-<img width="782" height="540" alt="image" src="https://github.com/user-attachments/assets/6d549830-34b0-4916-9370-fc680e71f881" />
+<img width="900" height="1600" alt="image" src="https://github.com/user-attachments/assets/ba5e9f9b-4769-460f-91e1-8622097bc0de" />
 
 
 ---
